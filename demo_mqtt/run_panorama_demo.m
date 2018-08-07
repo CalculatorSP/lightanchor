@@ -6,9 +6,9 @@ rot = eye(3);
 new = true;
 
 % CAMERA-SPECIFIC SETUP
-FOV = 21 * pi / 180;
-FW = 320;
-FH = 240;
+FOV = 60 * pi / 180;
+FW = 640;
+FH = 480;
 [px, py] = meshgrid(1:FW, 1:FH);
 p = [px(:) - FW / 2, -(py(:) - FH / 2), -hypot(FW, FH) / 2 * cot(FOV / 2) * ones(FW * FH, 1)];
 p = p * [1 0 0; 0 cosd(90) -sind(90); 0 sind(90) cosd(90)].';
