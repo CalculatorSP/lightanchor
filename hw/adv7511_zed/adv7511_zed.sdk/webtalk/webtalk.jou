@@ -1,0 +1,10 @@
+#-----------------------------------------------------------
+# Webtalk v2015.2 (64-bit)
+# SW Build 1266856 on Fri Jun 26 16:35:25 MDT 2015
+# 
+# Start of session at: Thu Jul  5 17:29:00 2018
+# Process ID: 20712
+# Log file: /home/ilim/Desktop/adv7511_zed/adv7511_zed.sdk/webtalk/webtalk.log
+# Journal file: /home/ilim/Desktop/adv7511_zed/adv7511_zed.sdk/webtalk/webtalk.jou
+#-----------------------------------------------------------
+source sdk_webtalk.tcl

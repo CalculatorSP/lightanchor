@@ -1,0 +1,12 @@
+#-----------------------------------------------------------
+# Vivado v2015.2 (64-bit)
+# SW Build 1266856 on Fri Jun 26 16:35:25 MDT 2015
+# IP Build 1264090 on Wed Jun 24 14:22:01 MDT 2015
+# Start of session at: Tue Jul 10 11:26:07 2018
+# Process ID: 2606
+# Log file: /home/ilim/vivado.log
+# Journal file: /home/ilim/vivado.jou
+#-----------------------------------------------------------
+start_gui
+open_project /home/ilim/Desktop/adv7511_zed/adv7511_zed.xpr
+archive_project /home/ilim/Desktop/adv7511_zed.xpr.zip -force -include_config_settings
