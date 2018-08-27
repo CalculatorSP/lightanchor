@@ -29,7 +29,6 @@ res = convn(g_vid, h(1, 1, 1, end:-1:1), 'valid');
 [maxval, maxidx] = max(res(:));
 [minval, ~] = min(res(:));
 res = (res - minval) ./ (maxval - minval);
-res = cat(3, 0*res, 0*res, res);
 res(maxidx) = 1;
 figure; imshow(res);
 loc = [mod(maxidx - 1, H) + 1, floor((maxidx - 1) / H) + 1];
