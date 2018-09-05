@@ -17,7 +17,7 @@ height = 800
 width = 1600
 #########################
 
-img = im.imread('/home/vinamra/Desktop/equirectangular-toolbox/images/cube2.jpg')
+img = im.imread('./cube2.jpg')
 frame = img
 frame_height = frame.shape[0]
 frame_width = frame.shape[1]
