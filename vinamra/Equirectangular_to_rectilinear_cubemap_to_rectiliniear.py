@@ -4,17 +4,38 @@
 # In[1]:
 
 
-from math import pi
+get_ipython().magic(u'matplotlib')
 import numpy as np
 import imageio as im
 import matplotlib.pyplot as plt
 
+
+# In[2]:
+
+
+def rotation_matrix(axis, theta):
+    """
+    Return the rotation matrix associated with counterclockwise rotation about
+    the given axis by theta radians.
+    """
+    axis = np.asarray(axis)
+    axis = axis / np.sqrt(np.dot(axis, axis))
+    a = np.cos(theta / 2.0)
+    b, c, d = -axis * np.sin(theta / 2.0)
+    aa, bb, cc, dd = a * a, b * b, c * c, d * d
+    bc, ad, ac, ab, bd, cd = b * c, a * d, a * c, a * b, b * d, c * d
+    return np.array([[aa + bb - cc - dd, 2 * (bc + ad), 2 * (bd - ac)],
+                     [2 * (bc - ad), aa + cc - bb - dd, 2 * (cd + ab)],
+                     [2 * (bd + ac), 2 * (cd - ab), aa + dd - bb - cc]])
+
+
+# In[3]:
+
+
 ###### Parameters ######
-center_point = np.array([0.5,0])
-FOV = [2, 2]
-theta = 0
-height = 800
-width = 1600
+width = 640
+height = 480
+FOV = 80 * np.pi / 180
 #########################
 
 img = im.imread('./cube2.jpg')
@@ -25,144 +46,75 @@ frame_channel = frame.shape[2]
 cubeFaceHeight = frame_height/3
 cubeFaceWidth = frame_width/4
 
-PI = pi
-PI_2 = pi * 0.5
-PI2 = pi * 2.0
-
-
-# In[2]:
-
-
-xx, yy = np.meshgrid(np.linspace(0, 1, width), np.linspace(0, 1, height))
-screen_points = np.array([xx.ravel(), yy.ravel()]).T
-
-
-# In[3]:
-
-
-cp1 = center_point * 2 - 1
-cp2 = np.array([PI, PI_2])
-cp = cp1 * cp2 # point-wise multiplication
-
 
 # In[4]:
 
 
-cc1 = (screen_points * 2 - 1) 
-cc2 = np.array([PI, PI_2]) * (np.ones(screen_points.shape) * FOV)
-convertedScreenCoord  = cc1 * cc2
-# applying rotation
-rot_cc_x = np.cos(theta*PI/180)*convertedScreenCoord.T[0] - np.sin(theta*PI/180)*convertedScreenCoord.T[1]
-rot_cc_y = np.sin(theta*PI/180)*convertedScreenCoord.T[0] + np.cos(theta*PI/180)*convertedScreenCoord.T[1]
-
-convertedScreenCoord.T[0]  = rot_cc_x
-convertedScreenCoord.T[1]  = rot_cc_y
-# equispaced angular points
+xx, yy = np.meshgrid(np.arange(-np.rint(width / 2), np.rint(width / 2)), np.arange(np.rint(height / 2), -np.rint(height / 2), -1))
+zz = -width / 2 / np.tan(FOV / 2) * np.ones(xx.shape)
+screen_points = np.array([xx.ravel(), yy.ravel(), zz.ravel()]).T
 
 
 # In[5]:
 
 
-# x and y co-ordinates
-x = convertedScreenCoord.T[0]
-y = convertedScreenCoord.T[1]
-
-rou = np.sqrt(x ** 2 + y ** 2)
-c = np.arctan(rou)
-sin_c = np.sin(c)
-cos_c = np.cos(c)
-
-lat = np.arcsin(cos_c * np.sin(cp[1]) + (y * sin_c * np.cos(cp[1])) / rou)
-lon = cp[0] + np.arctan2(x * sin_c, rou * np.cos(cp[1]) * cos_c - y * np.sin(cp[1]) * sin_c)
-lat = (lat / PI_2 + 1.) * 0.5
-lon = (lon / PI + 1.) * 0.5
-spericalCoord = np.array([lon, lat]).T
-
-screen_coord = spericalCoord
-uf = np.mod(screen_coord.T[0],1)
-vf = screen_coord.T[1]
-theta = vf * PI
-phi = uf * PI2
-
-
-# In[6]:
-
-
-# Convert to Cubemap index
-xxx = np.sin(phi) * np.sin(theta) * -1
-yyy = np.cos(theta) * -1
-zzz = np.cos(phi) * np.sin(theta) * -1
-
-# normalize this
-a = np.maximum(np.absolute(zzz),np.maximum(np.absolute(xxx),np.absolute(yyy)))
-
-#Vector Parallel to the unit vector that lies on one of the cube faces
-xa = np.divide(xxx, a) 
-ya = np.divide(yyy, a)
-za = np.divide(zzz, a)
-
-xPixel = np.zeros((xa.size))
-yPixel = np.zeros((xa.size))
-xOffset = np.zeros((xa.size))
-yOffset = np.zeros((xa.size))
-
-#vec = np.column_stack((xa,ya,za))
-for ii in xrange(xa.size):
-    if int(xa[ii]) == 1:
-        #Right
-        xPixel[ii] = (((za[ii] + 1) / 2) - 1) * cubeFaceWidth
-        xOffset[ii] = 2 * cubeFaceWidth
-        yPixel[ii] = (((ya[ii] + 1) / 2)) * cubeFaceHeight
-        yOffset[ii] = cubeFaceHeight
-    elif int(xa[ii]) == -1:
-        #Left
-        xPixel[ii] = (((za[ii] + 1) / 2)) * cubeFaceWidth
-        xOffset[ii] = 0
-        yPixel[ii] = (((ya[ii] + 1) / 2)) * cubeFaceHeight
-        yOffset[ii] = cubeFaceHeight
-    elif int(ya[ii]) == 1:
-        #Up
-        xPixel[ii] = (((xa[ii] + 1) / 2)) * cubeFaceWidth
-        xOffset[ii] = cubeFaceWidth
-        yPixel[ii] = (((za[ii] + 1) / 2) - 1) * cubeFaceHeight
-        yOffset[ii] = 2 * cubeFaceHeight
-    elif int(ya[ii]) == -1:
-        #Down
-        xPixel[ii] = (((xa[ii] + 1) / 2)) * cubeFaceWidth
-        xOffset[ii] = cubeFaceWidth
-        yPixel[ii] = (((za[ii] + 1) / 2)) * cubeFaceHeight
-        yOffset[ii] = 0
-    elif int(za[ii]) == 1:
-        #Front
-        xPixel[ii] = (((xa[ii] + 1) / 2)) * cubeFaceWidth
-        xOffset[ii] = cubeFaceWidth
-        yPixel[ii] = (((ya[ii] + 1) / 2)) * cubeFaceHeight
-        yOffset[ii] = cubeFaceHeight
-    elif int(za[ii]) == -1:
-        #Back
-        xPixel[ii] = (((xa[ii] + 1) / 2) - 1) * cubeFaceWidth
-        xOffset[ii] = 3 * cubeFaceWidth
-        yPixel[ii] = (((ya[ii] + 1) / 2)) * cubeFaceHeight
-        yOffset[ii] = cubeFaceHeight
-    
-xPixel = np.absolute(xPixel)
-yPixel = np.absolute(yPixel)    
-xPixel = np.add(xPixel,xOffset)
-yPixel = np.add(yPixel,yOffset)
-xPixel = np.rint(xPixel).astype(int)
-yPixel = np.rint(yPixel).astype(int)
-
-
-# In[7]:
-
-
-base_y0 = np.multiply(yPixel, frame_width) #frame is a combined cubemap
-pix_cor = np.add(base_y0, xPixel)
-flat_img = np.reshape(frame, [-1, frame_channel])
-A = np.take(flat_img, pix_cor, axis=0)
-
-nfov = np.reshape(np.round(A).astype(np.uint8), [height, width, 3])
-plt.imshow(nfov)
+axis = np.random.random_sample(3)
+fig = plt.figure(figsize=(12, 10), dpi= 80, facecolor='w', edgecolor='k')
+ax = fig.add_subplot(111)
+plt.ion()
 plt.show()
-plt.imsave('/home/vinamra/Desktop/equirectangular-toolbox/images/morningout5.png',nfov)
+for theta in np.linspace(0, 2*np.pi, 24):
+    rotm = rotation_matrix(axis, theta)
+    
+    # Apply rotation
+    rot_cc = np.dot(screen_points, rotm.T)
+    
+    # Compute axis along which each pixel primarily lies and normalize
+    face_idx = np.argmax(np.abs(rot_cc), axis=1)
+    a = np.abs(rot_cc[range(len(face_idx)), face_idx])
+    rot_cc[:, 0] /= a
+    rot_cc[:, 1] /= a
+    rot_cc[:, 2] /= a
+    
+    xPixel = np.zeros((rot_cc.shape[0]))
+    yPixel = np.zeros((rot_cc.shape[0]))
+    for ii in range(rot_cc.shape[0]):
+        if face_idx[ii] == 0:
+            if rot_cc[ii, 0] > 0:
+                # Right
+                xPixel[ii] = (2 + (rot_cc[ii, 2] + 1) / 2) * cubeFaceWidth
+                yPixel[ii] = (1 + (-rot_cc[ii, 1] + 1) / 2) * cubeFaceHeight
+            else:
+                # Left
+                xPixel[ii] = (0 + (-rot_cc[ii, 2] + 1) / 2) * cubeFaceWidth
+                yPixel[ii] = (1 + (-rot_cc[ii, 1] + 1) / 2) * cubeFaceHeight
+        elif face_idx[ii] == 1:
+            if rot_cc[ii, 1] > 0:
+                # Top
+                xPixel[ii] = (1 + (rot_cc[ii, 0] + 1) / 2) * cubeFaceWidth
+                yPixel[ii] = (0 + (-rot_cc[ii, 2] + 1) / 2) * cubeFaceHeight
+            else:
+                # Bottom
+                xPixel[ii] = (1 + (rot_cc[ii, 0] + 1) / 2) * cubeFaceWidth
+                yPixel[ii] = (2 + (rot_cc[ii, 2] + 1) / 2) * cubeFaceHeight
+        else:
+            if rot_cc[ii, 2] > 0:
+                # Back
+                xPixel[ii] = (3 + (-rot_cc[ii, 0] + 1) / 2) * cubeFaceWidth
+                yPixel[ii] = (1 + (-rot_cc[ii, 1] + 1) / 2) * cubeFaceHeight
+            else:
+                # Front
+                xPixel[ii] = (1 + (rot_cc[ii, 0] + 1) / 2) * cubeFaceWidth
+                yPixel[ii] = (1 + (-rot_cc[ii, 1] + 1) / 2) * cubeFaceHeight
+    
+    xPixel = xPixel.astype(int)
+    yPixel = yPixel.astype(int)
+    
+    pix_cor = yPixel * frame_width + xPixel
+    flat_img = np.reshape(frame, [-1, frame_channel])
+    A = np.take(flat_img, pix_cor, axis=0)
 
+    nfov = np.reshape(np.round(A).astype(np.uint8), [height, width, 3])
+    img = ax.imshow(nfov)
+    plt.draw()
+    plt.pause(0.001)
