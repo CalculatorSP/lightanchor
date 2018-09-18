@@ -1,0 +1,16 @@
+#-----------------------------------------------------------
+# Vivado v2018.2 (64-bit)
+# SW Build 2258646 on Thu Jun 14 20:03:12 MDT 2018
+# IP Build 2256618 on Thu Jun 14 22:10:49 MDT 2018
+# Start of session at: Wed Sep  5 12:39:51 2018
+# Process ID: 8136
+# Current directory: C:/Users/John/Desktop/project_imu_warp.xpr/project_imu_warp
+# Command line: vivado.exe -gui_launcher_event rodinguilauncherevent8080 C:\Users\John\Desktop\project_imu_warp.xpr\project_imu_warp\project_imu_warp.xpr
+# Log file: C:/Users/John/Desktop/project_imu_warp.xpr/project_imu_warp/vivado.log
+# Journal file: C:/Users/John/Desktop/project_imu_warp.xpr/project_imu_warp\vivado.jou
+#-----------------------------------------------------------
+start_gui
+open_project -read_only C:/Users/John/Desktop/project_imu_warp.xpr/project_imu_warp/project_imu_warp.xpr
+update_compile_order -fileset sources_1
+launch_sdk -workspace C:/Users/John/Desktop/project_imu_warp.xpr/project_imu_warp/project_imu_warp.sdk -hwspec C:/Users/John/Desktop/project_imu_warp.xpr/project_imu_warp/project_imu_warp.sdk/design_1_wrapper.hdf
+open_bd_design {C:/Users/John/Desktop/project_imu_warp.xpr/project_imu_warp/project_imu_warp.srcs/sources_1/bd/design_1/design_1.bd}

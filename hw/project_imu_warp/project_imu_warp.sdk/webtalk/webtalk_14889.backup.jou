@@ -1,0 +1,12 @@
+#-----------------------------------------------------------
+# Webtalk v2017.2 (64-bit)
+# SW Build 1909853 on Thu Jun 15 18:39:10 MDT 2017
+# 
+# Start of session at: Tue Aug 21 15:25:00 2018
+# Process ID: 14889
+# Current directory: /home/vinamra/project_imu_warp/project_imu_warp.sdk/webtalk
+# Command line: wbtcv -mode batch -source sdk_webtalk.tcl
+# Log file: /home/vinamra/project_imu_warp/project_imu_warp.sdk/webtalk/webtalk.log
+# Journal file: /home/vinamra/project_imu_warp/project_imu_warp.sdk/webtalk/webtalk.jou
+#-----------------------------------------------------------
+source sdk_webtalk.tcl
